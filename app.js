@@ -9,10 +9,10 @@ app.use(bodyparser.urlencoded({extended: true}));
 app.get('/',function (req, res){
     res.sendFile(__dirname + "/signup.html");
 })
-app.post('/', function (request1,resposne){
-    const firstName = request1.body.fName;
-    const lastName = request1.body.lName;
-    const email = request1.body.email;
+app.post('/', function (req,res){
+    const firstName = req.body.fName;
+    const lastName = req.body.lName;
+    const email = req.body.email;
     const data = {
         members : [
             {
@@ -20,7 +20,7 @@ app.post('/', function (request1,resposne){
                 status: "subscribed",
                 merge_fields : {
                     FNAME : firstName,
-                    LNAME : lastName,
+                    LNAME  : lastName,
                 }
             }
         ]
@@ -29,16 +29,25 @@ app.post('/', function (request1,resposne){
     const url = "https://us21.api.mailchimp.com/3.0/lists/efec40ffaf"
     const options = {
         method: "POST",
-        auth: "sigma:bf49c7ddd263b356f9564d6352b824d0-us21",
+        auth: "sigma:f49c7ddd263b356f9564d6352b824d0-us21",
     }
-    const request2 = https.request(url,options, function(response){
+    const request = https.request(url,options, function(response){
+        if (response.statusCode === 200) {
+            res.sendFile(__dirname + "/success.html")
+        }   
+        else{
+            res.sendFile(__dirname + "/success.html")
+        }
         response.on("data", function(data){
             console.log(JSON.parse(data));
         })
     })
-    request2.rawListeners(jsondata);
-    request2.end();
+    request.write(jsondata);
+    request.end();
 });
+app.post("/failure", function(req,res){
+res.redirect("/")
+})
 app.listen(port, () => console.log(`server is running on port ${port}!`))
 
 // API Key
